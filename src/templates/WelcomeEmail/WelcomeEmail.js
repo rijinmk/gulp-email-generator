@@ -1,4 +1,4 @@
-
+export const WelcomeEmail = ( name ) => {return `
 <html>
     <head>
         <title></title>
@@ -6,6 +6,9 @@
             @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap');
             p, h1, h2, h3, h4, ol, li, ul, div { font-family: 'Open Sans', sans-serif }
             * {margin:0px; padding:0px ;}
+
+            /* <%% %%> */
+
         </style>
     </head>
     <body>
@@ -17,6 +20,7 @@
     
                 <div class="email__content">
                     <div class="email__body">
+                        Hi ${name}
                     </div>
                 </div>
     
@@ -28,3 +32,4 @@
         </a>
     </body>
 </html>
+`}

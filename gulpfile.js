@@ -1,7 +1,10 @@
 const gulp = require("gulp");
 const yargs = require("yargs");  
-const sass = require("sass"); 
-// const livereload = require("livereload"); 
+const sass = require("gulp-sass");
+const cssmin = require("gulp-cssmin");  
+const open = require("gulp-open");
+const shell = require("shelljs"); 
+// const livereload = require("gulp-livereload"); 
 const fs = require('fs');
 const argv = yargs.argv;
 
@@ -24,6 +27,9 @@ gulp.task("create", (done) => {
         fs.writeFileSync(`${dir}/index.html`, tenderdHTML); 
         fs.writeFileSync(`${dir}/main.scss`, tenderdSCSS); 
     }
+
+    shell.exec(`gulp watch --name ${name}`);
+
     done(); 
 }); 
 
@@ -39,11 +45,60 @@ gulp.task("list", (done) => {
     done(); 
 }); 
 
-gulp.task("extract-sendgrid", (done) => {
-    let location = `${__dirname}/src/templates/**/*.html`;  
-    gulp.src(location)
-        .pipe((a,b,c) => {
-            console.log(a, b, c); 
-        });  
+gulp.task("extract-json-html", (done) => {
+    let name = argv.name; 
+    let location = `${__dirname}/src/templates/${name}/index.html`;  
+    let html = (fs.readFileSync(location)).toString();  
+    let matched = html.match(/\{\{([\w_\.]+)\}\}/gi); 
+    let properties = {}; 
+    matched.forEach(e => {
+        _e=e.replace("{{", "");
+        _e=_e.replace("}}", "");
+        properties[_e]=`${_e}`;
+    }); 
+    fs.writeFileSync(`${__dirname}/src/templates/${name}/${name}.json`, JSON.stringify(properties, null, 2));
     done(); 
+}); 
+
+gulp.task("make-node-js", (done) => {
+    let name = argv.name; 
+    let location = `${__dirname}/src/templates/${name}/index.html`;  
+    let html = (fs.readFileSync(location)).toString(); 
+    let htmlDataObj = JSON.parse((fs.readFileSync(`${__dirname}/src/templates/${name}/${name}.json`)).toString()); 
+
+    _html = html.replace(/{{/gi, "${");
+    _html = _html.replace(/}}/gi, "}");
+    console.log();
+    let forJS = "export const " + name + " = ( " + (Object.keys(htmlDataObj)) + " ) => ";
+        forJS += "{return `" + _html + "`}";
+    fs.writeFileSync(`${__dirname}/src/templates/${name}/${name}.js`, forJS);
+    done(); 
+}); 
+
+gulp.task("scss-css", (done) => {
+    let name = argv.name; 
+    gulp.src(`${__dirname}/src/templates/**/*.scss`)
+        .pipe(sass())
+        .pipe(cssmin())
+        .pipe(gulp.dest(`${__dirname}/src/templates/`))
+    done(); 
+}); 
+
+gulp.task("email-ready-html", (done) => {
+    let name = argv.name;
+    let html = (fs.readFileSync(`${__dirname}/src/templates/${name}/index.html`)).toString(); 
+    html = html.split("/* <%% %%> */"); 
+    
+    let css = fs.readFileSync(`${__dirname}/src/templates/${name}/main.css`).toString(); 
+    let emailReadyHTML = html[0] + css + html[1];
+    
+    fs.writeFileSync(`${__dirname}/src/templates/${name}/email.html`, emailReadyHTML);
+
+    done(); 
+}); 
+
+gulp.task("watch", (done) => {
+    gulp.watch(`${__dirname}/src/templates/**/*.html`, gulp.series("extract-json-html", "make-node-js"));
+    gulp.watch(`${__dirname}/src/templates/**/*.scss`, gulp.series("scss-css", "email-ready-html"));
+    done();
 }); 
