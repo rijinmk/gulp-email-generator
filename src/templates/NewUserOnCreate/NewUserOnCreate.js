@@ -36,17 +36,22 @@ export const NewUserOnCreate = ( name,link ) => {return `
                 <table>
                     <tr>
                         <td>
-                            
+                            <img width="100px" src="https://storage.googleapis.com/tenderd-ui/assets/emailers/177-envelope-mail-send-outline.gif" alt="">
+                            <h4>GOT A QUERY?</h4>
+                            <h4 style="margin-bottom: 30px;">GET IN TOUCH</h4>
+                            <p style="margin-bottom: 30px;">Hit us up on the numbers featured or feel free to vist our FAQ</p>
+                            <a style="margin-bottom: 30px;" class="email__button" href="${link}">Submit Inquiry</a> 
+                            <br><br>
                         </td>
 
                         <td class="email__inquiry">
                             <table>
-                                <tr><td>PHONE</td></tr>
-                                <tr><td>+97145897096</td></tr>
-                                <tr><td>EMAIL</td></tr>
-                                <tr><td>info@tenderd.com</td></tr>
-                                <tr><td>WEBSITE</td></tr>
-                                <tr><td>www.tenderd.com</td></tr>
+                                <tr><td> <h4>PHONE</h4> </td></tr>
+                                <tr><td style="padding-bottom:20px !important;">+97145897096</td></tr>
+                                <tr><td> <h4>EMAIL</h4> </td></tr>
+                                <tr><td style="padding-bottom:20px !important;">info@tenderd.com</td></tr>
+                                <tr><td> <h4>WEBSITE</h4> </td></tr>
+                                <tr><td style="padding-bottom:20px !important;">www.tenderd.com</td></tr>
                             </table>
                         </td>
                     </tr>
